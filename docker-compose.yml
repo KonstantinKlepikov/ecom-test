@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+
+  ecom-api:
+    image: ecom-api
+    container_name: ecom-api
+    build:
+      context: ./api
+      dockerfile: api.dockerfile
+    volumes:
+      - ./api/app:/app

@@ -65,3 +65,16 @@ Web-приложение для определения заполненных ф
 Выходные данные:
 
 - Имя наиболее подходящей данному списку полей формы, при отсутствии совпадений с известными формами произвести типизацию полей на лету и вернуть список полей с их типами.
+
+## Resources
+
+### Run or stop stack from root
+
+- `make serve` to run dev mode
+- `make down` to stop
+- rebuild single service `docker compose up -d --no-deps --build <service-name>`
+
+### Use local resources to watch project
+
+- [api swagger docs](http://localhost:8182/docs/)
+- [mongoDB admin panel](http://localhost:8181/)
