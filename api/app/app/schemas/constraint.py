@@ -22,5 +22,14 @@ class BaseStrEnum(str, BaseEnum):
     """
 
 
+class FieldTypes(BaseStrEnum):
+    """Type of fields
+    """
+    EMAIL = 'email'
+    PHONE = 'phone'
+    DATE = 'date'
+    TEXT = 'text'
+
+
 class Collections(BaseStrEnum):
     TEMPLATES = 'templates'

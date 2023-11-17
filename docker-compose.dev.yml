@@ -32,6 +32,19 @@ services:
     networks:
       - ecom-dev-api-network
 
+  ecom-mongo-test:
+    image: mongo
+    container_name: ecom-mongo-test
+    restart: always
+    command: mongod --port 27021
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${TEST_ROOT_USERNAME?Variable not set}
+      MONGO_INITDB_ROOT_PASSWORD: ${TEST_ROOT_PASSWORD?Variable not set}
+      MONGO_INITDB_DATABASE: test-db
+    networks:
+      - ecom-dev-api-network
+
   ecom-api:
     ports:
       - "8182:8000"
