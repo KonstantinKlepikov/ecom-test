@@ -22,8 +22,7 @@ router = APIRouter()
 async def get_form(
     request: Request,
     db: ClientSession = Depends(get_session)
-        # ) -> Template | TypedRequestScheme:
-            ):
+        ) -> TemplateName | RequestTyped:
     """Get template by template_name
 
     NOTE: хочется обратить внимание, что использование
@@ -37,3 +36,4 @@ async def get_form(
     # TODO: raise if existed fields less than 4 or multiple with same type
 
     # TODO: search db. If exist -> name. if not -> field types
+    return TemplateName(**params)

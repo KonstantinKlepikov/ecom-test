@@ -1,20 +1,22 @@
 import pytest
 from typing import Generator
 from pydantic_settings import BaseSettings
-from pydantic import SecretStr
+from pydantic import MongoDsn
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from pymongo import ASCENDING
 from pymongo.client_session import ClientSession
 from motor.motor_asyncio import AsyncIOMotorClient
 from httpx import AsyncClient
 from app.main import app
+from app.config import settings
 from app.schemas.constraint import Collections
 from app.db.init_db import get_session
+from app.schemas.scheme_templates import Template
 
 
 class TestSettings(BaseSettings):
     """Test settings"""
-    TEST_MONGO_DB: str | None = None
-    TEST_MONGODB_URL: SecretStr | None = None
+    TEST_MONGODB_URL: MongoDsn | None = None
 
 
 test_settings = TestSettings()
@@ -34,18 +36,39 @@ class BdTestContext:
 
 
 @pytest.fixture(scope="function")
+def mock_data() -> tuple[dict[str, str], Template]:
+    """Mock template data
+    """
+    m = {
+        "name": "some template",
+        "some_email": "some@email.com",
+        "some_phone": "+7 000 000 00 00",
+        "some_date": "12.12.2012",
+        "some_text": "some text",
+            }
+    m_t = Template(
+        name=m['name'],
+        email=m['some_email'],
+        phone=m['some_phone'],
+        date=m['some_date'],
+        text=m['some_text']
+            )
+    return m, m_t
+
+
+@pytest.fixture(scope="function")
 async def db() -> Generator:
     """Get mock mongodb
     """
     async with BdTestContext(
-        test_settings.TEST_MONGODB_URL,
-        test_settings.TEST_MONGO_DB
+        test_settings.TEST_MONGODB_URL.unicode_string(),
+        settings.DB_NAME
             ) as d:
 
         for collection in Collections.get_values():
             await d.create_collection(collection)
             if collection == Collections.TEMPLATES.value:
-                await d[test_settings.TEST_MONGO_DB][collection].create_index(
+                await d[settings.DB_NAME][collection].create_index(
                     [('name', ASCENDING), ], unique=True
                         )
         yield d
@@ -54,7 +77,9 @@ async def db() -> Generator:
 @pytest.fixture(scope="function")
 async def client(db) -> Generator:
 
-    bd_test_client = AsyncIOMotorClient(test_settings.TEST_MONGODB_URL)
+    bd_test_client = AsyncIOMotorClient(
+        test_settings.TEST_MONGODB_URL.unicode_string()
+            )
 
     async def mock_session() -> Generator[ClientSession, None, None]:
         """Get mongo session

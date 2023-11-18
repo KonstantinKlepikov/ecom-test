@@ -1,5 +1,6 @@
 from typing_extensions import Annotated
 from pydantic import BaseModel, constr, validator
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from pydantic.functional_validators import AfterValidator
 from bson.objectid import ObjectId
 from app.schemas.constraint import FieldTypes
