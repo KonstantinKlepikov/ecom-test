@@ -4,9 +4,9 @@ TODO:
 - [x] mongodb
 - [x] app
 - [x] dev dewpendencies
-- [ ] in scheme
-- [ ] out scheme
+- [x] in scheme
+- [x] out scheme
 - [ ] crud
 - [ ] fake data
-- [ ] routes
+- [x] routes
 - [ ] tests

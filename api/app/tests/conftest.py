@@ -43,7 +43,7 @@ def mock_data() -> tuple[dict[str, str], Template]:
         "name": "some template",
         "some_email": "some@email.com",
         "some_phone": "+7 000 000 00 00",
-        "some_date": "12.12.2012",
+        "some_date": "2012.12.01",
         "some_text": "some text",
             }
     m_t = Template(
