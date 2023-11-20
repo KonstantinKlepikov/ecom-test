@@ -1,11 +1,17 @@
-from typing import Annotated
-from fastapi import APIRouter, status, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, status, Depends, HTTPException, Request
 from pymongo.client_session import ClientSession
-from pymongo.errors import DuplicateKeyError
+from pydantic_core import ValidationError
 from app.db.init_db import get_session
-from app.schemas.scheme_templates import TemplateName, RequestTyped
+from app.schemas.scheme_templates import (
+    TemplateName,
+    TemplateFields,
+    RequestTyped,
+    RequestScheme,
+    FindedTemplateNames,
+        )
 from app.config import settings
 from app.crud.crud_template import templates
+from app.core.check import check_text
 
 
 router = APIRouter()
@@ -16,24 +22,34 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary='Get template by template pattern',
     response_description="Ok.",
-    response_model=TemplateName | RequestTyped,
+    response_model=FindedTemplateNames | RequestTyped,
     responses=settings.ERRORS
         )
 async def get_form(
     request: Request,
     db: ClientSession = Depends(get_session)
-        ) -> TemplateName | RequestTyped:
+        ) -> FindedTemplateNames | RequestTyped:
     """Get template by template_name
 
     NOTE: хочется обратить внимание, что использование
-    ресукрса с именем get_ в POST-запросе это святотатство :)
+    ресурса с именем get_ в POST-запросе это святотатство :)
     """
     params = request.query_params._dict
-    # TODO: here we validate each fields by value type,
-    # and use only fields existed in templates db. As result we create
-    # object like: field_name: field tipe
 
-    # TODO: raise if existed fields less than 4 or multiple with same type
+    try:
+        request_scheme = RequestScheme(**params)
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=e.json())
 
-    # TODO: search db. If exist -> name. if not -> field types
-    return TemplateName(**params)
+    db_scheme = TemplateFields(**request_scheme.model_dump())
+
+    in_db = await templates.get_many(db, db_scheme)
+    checked = check_text(in_db, request_scheme.text_fields)
+
+    if checked:
+        return FindedTemplateNames(
+            finded_names=[TemplateName(**resp)for resp in checked]
+                )
+    else:
+        print(request_scheme.model_dump())
+        return RequestTyped(**request_scheme.model_dump())

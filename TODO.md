@@ -6,7 +6,7 @@ TODO:
 - [x] dev dewpendencies
 - [x] in scheme
 - [x] out scheme
-- [ ] crud
+- [x] crud
 - [ ] fake data
 - [x] routes
-- [ ] tests
+- [x] tests

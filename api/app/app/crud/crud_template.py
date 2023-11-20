@@ -2,11 +2,11 @@ from typing import Any
 from pymongo.client_session import ClientSession
 from app.config import settings
 from app.crud.crud_base import CRUDBase
-from app.schemas.scheme_templates import Template
+from app.schemas.scheme_templates import Template, TemplateFields
 from app.schemas.constraint import Collections
 
 
-class CRUDTemplate(CRUDBase[Template]):
+class CRUDTemplate(CRUDBase[TemplateFields]):
     """Templates crud
     """
 

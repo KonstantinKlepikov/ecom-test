@@ -2,7 +2,6 @@ import pytest
 from typing import Generator
 from pydantic_settings import BaseSettings
 from pydantic import MongoDsn
-from pydantic_extra_types.phone_numbers import PhoneNumber
 from pymongo import ASCENDING
 from pymongo.client_session import ClientSession
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -11,7 +10,8 @@ from app.main import app
 from app.config import settings
 from app.schemas.constraint import Collections
 from app.db.init_db import get_session
-from app.schemas.scheme_templates import Template
+from app.schemas.scheme_templates import Template, TemplateName
+from app.crud.crud_template import CRUDTemplate
 
 
 class TestSettings(BaseSettings):
@@ -48,16 +48,16 @@ def mock_data() -> tuple[dict[str, str], Template]:
             }
     m_t = Template(
         name=m['name'],
-        email=m['some_email'],
-        phone=m['some_phone'],
-        date=m['some_date'],
-        text=m['some_text']
+        email='some_email',
+        phone='some_phone',
+        date='some_date',
+        text='some_text'
             )
     return m, m_t
 
 
 @pytest.fixture(scope="function")
-async def db() -> Generator:
+async def db(mock_data: tuple[dict[str, str], Template]) -> Generator:
     """Get mock mongodb
     """
     async with BdTestContext(
@@ -71,7 +71,24 @@ async def db() -> Generator:
                 await d[settings.DB_NAME][collection].create_index(
                     [('name', ASCENDING), ], unique=True
                         )
+        # mock template
+        collection = d[Collections.TEMPLATES.value]
+        one = mock_data[1].model_dump()
+        await collection.insert_one(one)
+
+
         yield d
+
+
+@pytest.fixture(scope="function")
+async def crud_templates() -> CRUDTemplate:
+    """Get crud users
+    """
+    return CRUDTemplate(
+        schema=Template,
+        col_name=Collections.TEMPLATES.value,
+        db_name=settings.DB_NAME
+            )
 
 
 @pytest.fixture(scope="function")
