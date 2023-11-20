@@ -1,6 +1,6 @@
 from typing import Generator
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import ASCENDING, IndexModel
+from pymongo import ASCENDING
 from pymongo.client_session import ClientSession
 from pymongo.errors import CollectionInvalid
 from fastapi.logger import logger as fastAPI_logger

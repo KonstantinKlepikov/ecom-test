@@ -22,17 +22,19 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     summary='Get template by template pattern',
     response_description="Ok.",
-    response_model=FindedTemplateNames | RequestTyped,
     responses=settings.ERRORS
         )
 async def get_form(
     request: Request,
     db: ClientSession = Depends(get_session)
-        ) -> FindedTemplateNames | RequestTyped:
+        ):
     """Get template by template_name
 
     NOTE: хочется обратить внимание, что использование
     ресурса с именем get_ в POST-запросе это святотатство :)
+
+    К тому же, множественными схемами мы создаем
+    ситуацию неопределенного контратка. FastAPI это не поддерживает.
     """
     params = request.query_params._dict
 
@@ -51,5 +53,4 @@ async def get_form(
             finded_names=[TemplateName(**resp)for resp in checked]
                 )
     else:
-        print(request_scheme.model_dump())
         return RequestTyped(**request_scheme.model_dump())

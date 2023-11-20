@@ -9,8 +9,8 @@ class TestCRUDTemplates:
         self,
         db: ClientSession,
         crud_templates: CRUDTemplate,
-        mock_data:tuple[dict[str, str], Template]
-        ) -> None:
+        mock_data: tuple[dict[str, str], Template]
+            ) -> None:
         """Test create many for templates
         """
         db_scheme = TemplateFields(**mock_data[1].model_dump())

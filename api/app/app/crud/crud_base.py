@@ -41,4 +41,3 @@ class CRUDBase(Generic[SchemaDbType]):
         """
         data = db.client[self.db_name][self.col_name].find(q.model_dump())
         return await data.to_list(length=lenght)
-

@@ -10,7 +10,7 @@ from app.main import app
 from app.config import settings
 from app.schemas.constraint import Collections
 from app.db.init_db import get_session
-from app.schemas.scheme_templates import Template, TemplateName
+from app.schemas.scheme_templates import Template
 from app.crud.crud_template import CRUDTemplate
 
 
@@ -75,7 +75,6 @@ async def db(mock_data: tuple[dict[str, str], Template]) -> Generator:
         collection = d[Collections.TEMPLATES.value]
         one = mock_data[1].model_dump()
         await collection.insert_one(one)
-
 
         yield d
 

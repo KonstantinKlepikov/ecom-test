@@ -5,8 +5,6 @@ from phonenumbers.phonenumberutil import NumberParseException
 from email_validator import validate_email, EmailNotValidError
 from dateutil.parser import parser, ParserError
 from pydantic_core import PydanticCustomError
-from bson.objectid import ObjectId
-from app.schemas.constraint import FieldTypes
 
 
 class TemplateName(BaseModel):
@@ -79,7 +77,7 @@ class RequestScheme(BaseModel):
     """
 
     class Config:
-        extra='allow'
+        extra = 'allow'
 
     @model_validator(mode='before')
     @classmethod
@@ -92,7 +90,7 @@ class RequestScheme(BaseModel):
             'date': None,
             'text_fields': []
                 }
-        for k,v in data.items():
+        for k, v in data.items():
 
             # validate email
             try:
@@ -141,7 +139,6 @@ class RequestScheme(BaseModel):
             if isinstance(v, str):
                 result['text_fields'].append(k)
 
-
         # if no email, phone, date or text
         if all(result.values()) is not True:
             raise PydanticCustomError(
@@ -157,7 +154,7 @@ class RequestTyped(BaseModel):
     """
 
     class Config:
-        extra='allow'
+        extra = 'allow'
 
     @model_validator(mode='before')
     @classmethod
@@ -166,8 +163,4 @@ class RequestTyped(BaseModel):
         """
         data.update({name: 'text' for name in data['text_fields']})
         del data['text_fields']
-        print(data)
         return data
-
-
-

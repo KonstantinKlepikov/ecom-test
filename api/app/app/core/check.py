@@ -1,5 +1,6 @@
 from typing import Any
 
+
 def check_text(
     in_db: list[dict[str, Any]],
     names: list[str]

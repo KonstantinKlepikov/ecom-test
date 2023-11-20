@@ -62,4 +62,3 @@ class TestTemplatesApi:
             params=mock_data[0],
                 )
         assert response.status_code == 200, f'{response.content=}'
-        print(response.content)
